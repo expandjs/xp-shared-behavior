@@ -25,6 +25,30 @@ This behavior is used to add sharing capabilities on the context element.
 <script>
     Polymer.XPSharedBehavior = {
 
+        /**
+         * Share `value` with others.
+         *
+         * @method share
+         * @param {string} key
+         * @param {*} value
+         * @returns {Element}
+         */
+        share: function (key, value) {
+
+            // Asserting
+            XP.assertArgument(XP.isString(key, true), 1, 'string');
+
+            // Vars
+            var self = this;
+
+            // Sharing
+            self.sharers.forEach(function (sharer) { sharer.set('shared.' + key, value); });
+
+            return self;
+        },
+
+        /*********************************************************************/
+
         // PROPERTIES
         properties: {
 
@@ -33,7 +57,6 @@ This behavior is used to add sharing capabilities on the context element.
              *
              * @attribute shared
              * @type Object
-             * @default {}
              * @notifies
              * @readOnly
              */
@@ -41,8 +64,25 @@ This behavior is used to add sharing capabilities on the context element.
                 notify: true,
                 readOnly: true,
                 type: Object,
-                value: {}
+                value: function () { return {}; }
             }
+        },
+
+        /**
+         * The list of sharers.
+         *
+         * @property sharers
+         * @type Array
+         * @default []
+         * @readonly
+         */
+        sharers: [],
+
+        /*********************************************************************/
+
+        // LISTENER
+        ready: function () {
+            this.push('sharers', this);
         }
     };
 </script>
