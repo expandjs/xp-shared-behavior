@@ -64,7 +64,7 @@ This behavior is used to add sharing capabilities on the context element.
                 notify: true,
                 readOnly: true,
                 type: Object,
-                value: function () { return {}; }
+                value: function () { return (this.sharers[0] && this.sharers[0].shared) || {}; }
             }
         },
 
