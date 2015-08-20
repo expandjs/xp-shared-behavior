@@ -2,6 +2,7 @@
   "name": "xp-shared-behavior",
   "license": "BSD-3-Clause",
   "version": "0.9.6",
+  "main": "xp-shared-behavior.html",
   "description": "A custom element used to share data across an application",
   "homepage": "http://expandjs.com/elements/xp-shared-behavior",
   "authors": [
@@ -14,9 +15,6 @@
     "html5",
     "expandjs",
     "web-components"
-  ],
-  "main": [
-    "xp-shared-behavior.html"
   ],
   "ignore": [
     "**/.*"
