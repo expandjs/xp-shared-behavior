@@ -16,15 +16,19 @@ This behavior is used to add sharing capabilities on the context element.
 @homepage http://expandjs.com/elements/xp-shared-behavior
 @repository https://github.com/ExpandJS/xp-shared-behavior
 
+@behavior xp-object-behavior /bower_components/xp-object-behavior/xp-object-behavior.html
+
 @dependency polymer Polymer/polymer#^1.1.0
 @dependency expandjs ExpandJS/expandjs#0.9.8
+@dependency xp-object-behavior ExpandJS/xp-object-behavior#0.9.8
 -->
 
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="../xp-object-behavior/xp-object-behavior.html">
 
 <script>
-    Polymer.XPSharedBehavior = {
+    Polymer.XPSharedBehaviorImp = {
 
         /**
          * Share `value` with others.
@@ -32,27 +36,12 @@ This behavior is used to add sharing capabilities on the context element.
          * @method share
          * @param {string} path
          * @param {*} value
-         * @returns {Element}
+         * @returns {*}
          */
         share: function (path, value) {
-
-            // Asserting
             XP.assertArgument(XP.isString(path, true), 1, 'string');
-
-            // Vars
-            var self  = this,
-                parts = XP.split(path, '.');
-
-            // Sharing
-            self.sharers.forEach(function (sharer) {
-                var current = 'shared';
-                parts.forEach(function (part, i) {
-                    var object = sharer[current += '.' + part] && typeof sharer[current] === 'object';
-                    sharer.set(current, i + 1 === parts.length ? value : (object ? sharer[current] : {}));
-                });
-            });
-
-            return self;
+            this.sharers.forEach(function (sharer) { sharer.enforce('shared.' + path, value); });
+            return value;
         },
 
         /*********************************************************************/
@@ -93,4 +82,9 @@ This behavior is used to add sharing capabilities on the context element.
             this.push('sharers', this);
         }
     };
+
+    Polymer.XPSharedBehavior = [
+        Polymer.XPObjectBehavior,
+        Polymer.XPSharedBehaviorImp
+    ];
 </script>
