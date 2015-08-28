@@ -30,13 +30,28 @@ This behavior is used to add sharing capabilities on the context element.
          * Share `value` with others.
          *
          * @method share
-         * @param {string} key
+         * @param {string} path
          * @param {*} value
          * @returns {Element}
          */
-        share: function (key, value) {
-            var self = this;
-            if (XP.isString(key, true)) { self.sharers.forEach(function (sharer) { sharer.set('shared.' + key, value); }); }
+        share: function (path, value) {
+
+            // Asserting
+            XP.assertArgument(XP.isString(path, true), 1, 'string');
+
+            // Vars
+            var self  = this,
+                parts = XP.split(path, '.');
+
+            // Sharing
+            self.sharers.forEach(function (sharer) {
+                var current = 'shared';
+                parts.forEach(function (part, i) {
+                    var object = sharer[current += '.' + part] && typeof sharer[current] === 'object';
+                    sharer.set(current, i + 1 === parts.length ? value : (object ? sharer[current] : {}));
+                });
+            });
+
             return self;
         },
 
