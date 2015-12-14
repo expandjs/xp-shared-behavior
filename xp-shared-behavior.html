@@ -7,95 +7,114 @@ The complete set of contributors may be found at https://expandjs.github.io/CONT
 -->
 
 <!--
-This behavior is used to add sharing capabilities on the context element.
+A behavior used to add sharing capabilities on a custom element.
 
 @element xp-shared-behavior
-@description A custom element used to share data across an application
-@keywords web app, html5, expandjs, web-components
+@description A custom element used to add sharing capabilities on a custom element
+@keywords expandjs, web app, custom elements, web-components
 @group behaviors
+@hot
+
 @homepage http://expandjs.com/elements/xp-shared-behavior
 @repository https://github.com/ExpandJS/xp-shared-behavior
 
+@behavior xp-array-behavior /bower_components/xp-array-behavior/xp-array-behavior.html
 @behavior xp-object-behavior /bower_components/xp-object-behavior/xp-object-behavior.html
+@behavior xp-refirer-behavior /bower_components/xp-refirer-behavior/xp-refirer-behavior.html
 
-@dependency polymer Polymer/polymer#^1.1.0
-@dependency expandjs ExpandJS/expandjs#0.9.11
-@dependency xp-object-behavior ExpandJS/xp-object-behavior#0.9.11
+@dependency polymer Polymer/polymer#^1.2.0
+@dependency expandjs ExpandJS/expandjs#0.10.0
+@dependency xp-array-behavior ExpandJS/xp-array-behavior#0.10.0
+@dependency xp-object-behavior ExpandJS/xp-object-behavior#0.10.0
+@dependency xp-refirer-behavior ExpandJS/xp-refirer-behavior#0.10.0
 -->
 
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../expandjs/expandjs.html">
+<link rel="import" href="../xp-array-behavior/xp-array-behavior.html">
 <link rel="import" href="../xp-object-behavior/xp-object-behavior.html">
+<link rel="import" href="../xp-refirer-behavior/xp-refirer-behavior.html">
 
 <script>
-    Polymer.XPSharedBehaviorImp = {
+    (function () {
 
-        /**
-         * Share `value` with others.
-         *
-         * @method share
-         * @param {string} path
-         * @param {*} value
-         * @returns {*}
-         */
-        share: function (path, value) {
+        // Vars
+        var shared = {};
 
-            // Asserting
-            XP.assertArgument(XP.isString(path, true), 1, 'string');
-
-            // Vars
-            var self = this;
-
-            // Enforcing
-            self.enforce('shared.' + path, value);
-            
-            // Cloning
-            self.sharers.forEach(function (sharer) { sharer.notifyPath('shared.' + path, value); });
-
-            return value;
-        },
-
-        /*********************************************************************/
-
-        // PROPERTIES
-        properties: {
+        // Prototype
+        Polymer.XPSharedBehaviorImp = {
 
             /**
-             * The shared data.
+             * Share `value` with others.
              *
-             * @attribute shared
-             * @type Object
-             * @notifies
-             * @readOnly
+             * @method share
+             * @param {string} path
+             * @param {*} value
+             * @returns {*}
              */
-            shared: {
-                notify: true,
-                readOnly: true,
-                type: Object,
-                value: function () { return (this.sharers[0] && this.sharers[0].shared) || {}; }
+            share: function (path, value) {
+
+                // Asserting
+                XP.assertArgument(XP.isString(path, true), 1, 'string');
+
+                // Vars
+                var self = this;
+
+                // Enforcing
+                self.enforce('shared.' + path, value);
+
+                // Notifying
+                self.notifyOthers('sharers', 'shared.' + path, value);
+
+                return value;
+            },
+
+            /*********************************************************************/
+
+            // PROPERTIES
+            properties: {
+
+                /**
+                 * The shared data.
+                 *
+                 * @attribute shared
+                 * @type Object
+                 * @default {}
+                 * @notifies
+                 * @readonly
+                 */
+                shared: {
+                    notify: true,
+                    readOnly: true,
+                    value: shared
+                }
+            },
+
+            /**
+             * The list of sharers.
+             *
+             * @property sharers
+             * @type Array
+             * @default []
+             * @readonly
+             */
+            sharers: [],
+
+            /*********************************************************************/
+
+            // LISTENER
+            ready: function () {
+
+                // Appending
+                this.append('sharers', this);
             }
-        },
+        };
 
-        /**
-         * The list of sharers.
-         *
-         * @property sharers
-         * @type Array
-         * @default []
-         * @readonly
-         */
-        sharers: [],
-
-        /*********************************************************************/
-
-        // LISTENER
-        ready: function () {
-            this.push('sharers', this);
-        }
-    };
-
-    Polymer.XPSharedBehavior = [
-        Polymer.XPObjectBehavior,
-        Polymer.XPSharedBehaviorImp
-    ];
+        Polymer.XPSharedBehavior = [
+            Polymer.XPArrayBehavior,
+            Polymer.XPObjectBehavior,
+            Polymer.XPRefirerBehavior,
+            Polymer.XPSharedBehaviorImp
+        ];
+    }());
 </script>
